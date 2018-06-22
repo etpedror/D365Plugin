@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 
 namespace BasePlugin
 {
     /// <summary>
     /// A base class to be inherited when implementing a CRM Plugin
     /// </summary>
-    public abstract class BasePlugin : IPlugin
+    public abstract class PluginBase : IPlugin
     {
         #region Helpers
         #region Plugin Execution Runtime Providers
@@ -119,6 +120,90 @@ namespace BasePlugin
             }
         }
         private string _secureConfiguration;
+        
+        /// <summary>
+        /// Returns the value of an unsecure configuration item, if the UnsecureConfiguration is a valid xml
+        /// </summary>
+        /// <param name="label">the label of the parameter</param>
+        /// <returns>The value of the parameter</returns>
+        protected string GetUnsecureConfigurationDataString(string label)
+        {
+            return GetValueNode(UnsecureXml, label);
+        }
+
+        /// <summary>
+        /// Returns the value of a secure configuration item, if the SecureConfiguration is a valid xml
+        /// </summary>
+        /// <param name="label">the label of the parameter</param>
+        /// <returns>The value of the parameter</returns>
+        protected string GetSecureConfigurationDataString(string label)
+        {
+            return GetValueNode(SecureXml, label);
+        }
+
+        /// <summary>
+        /// Gets the UnsecureConfiguration as a XmlDocument
+        /// The XML should be in the format
+        /// <para />&lt;?xml version="1.0" encoding="utf-8"&gt;
+        /// <para />&lt;Settings&gt;
+        /// <para />  &lt;setting name = "ReportExc_ReportExecutionService" &gt;
+        /// <para />    &lt; value &gt; http://localhost/ReportServer/ReportExecution2005.asmx&lt;/value&gt;
+        /// <para />  &lt;/setting&gt;
+        /// <para />  &lt;setting name = "Unique_Organization" &gt;
+        /// <para />    &lt; value &gt; Contoso &lt;/ value &gt;
+        /// <para />  &lt;/ setting &gt;
+        /// <para />&lt;/ Settings &gt;
+        /// </summary>
+        protected XmlDocument UnsecureXml
+        {
+            get
+            {
+                if(_unsecureXml == null)
+                {
+                    _unsecureXml = new XmlDocument();
+                    _unsecureXml.LoadXml(UnsecureConfiguration);
+                }
+                return _unsecureXml;
+            }
+        }
+        private XmlDocument _unsecureXml = null;
+
+        /// <summary>
+        /// Gets the SecureConfiguration as a XmlDocument
+        /// The XML should be in the format
+        /// <para />&lt;?xml version="1.0" encoding="utf-8"&gt;
+        /// <para />&lt;Settings&gt;
+        /// <para />  &lt;setting name = "ReportExc_ReportExecutionService" &gt;
+        /// <para />    &lt; value &gt; http://localhost/ReportServer/ReportExecution2005.asmx&lt;/value&gt;
+        /// <para />  &lt;/setting&gt;
+        /// <para />  &lt;setting name = "Unique_Organization" &gt;
+        /// <para />    &lt; value &gt; Contoso &lt;/ value &gt;
+        /// <para />  &lt;/ setting &gt;
+        /// <para />&lt;/ Settings &gt;
+        /// </summary>
+        protected XmlDocument SecureXml
+        {
+            get
+            {
+                if (_secureXml == null)
+                {
+                    _secureXml = new XmlDocument();
+                    _secureXml.LoadXml(SecureConfiguration);
+                }
+                return _secureXml;
+            }
+        }
+        private XmlDocument _secureXml = null;
+
+        private static string GetValueNode(XmlDocument doc, string key)
+        {
+            XmlNode node = doc.SelectSingleNode(String.Format("Settings/setting[@name='{0}']", key));
+            if (node != null)
+            {
+                return node.SelectSingleNode("value").InnerText;
+            }
+            return string.Empty;
+        }
         #endregion
 
         #region Images
@@ -237,7 +322,7 @@ namespace BasePlugin
         #endregion
 
         #region Constructor
-        public BasePlugin(string unsecureConfiguration, string secureConfiguration)
+        public PluginBase(string unsecureConfiguration, string secureConfiguration)
         {
             _unsecureConfiguration = unsecureConfiguration;
             _secureConfiguration = secureConfiguration;
