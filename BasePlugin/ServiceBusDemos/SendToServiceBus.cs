@@ -7,7 +7,6 @@ namespace ServiceBusDemos
     {
         public SendToServiceBus(string unsecureConfiguration, string secureConfiguration):base(unsecureConfiguration, secureConfiguration)
         {
-
         }
 
         public override void Execute()
