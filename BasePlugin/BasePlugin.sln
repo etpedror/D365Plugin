@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusDemos", "ServiceB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusWorkflowActivity", "ServiceBusWorkflowActivity\ServiceBusWorkflowActivity.csproj", "{143135CA-4DCD-4BE3-BD86-1ACCD694817F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBusListener", "ServiceBusListener\ServiceBusListener.csproj", "{0A226498-A2F9-48CE-BF8B-E68D3FE1C856}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{143135CA-4DCD-4BE3-BD86-1ACCD694817F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{143135CA-4DCD-4BE3-BD86-1ACCD694817F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{143135CA-4DCD-4BE3-BD86-1ACCD694817F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A226498-A2F9-48CE-BF8B-E68D3FE1C856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A226498-A2F9-48CE-BF8B-E68D3FE1C856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A226498-A2F9-48CE-BF8B-E68D3FE1C856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A226498-A2F9-48CE-BF8B-E68D3FE1C856}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

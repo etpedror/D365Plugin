@@ -1,4 +1,5 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using Microsoft.Crm.Sdk.Messages;
+using Microsoft.Xrm.Sdk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,9 +85,28 @@ namespace BasePlugin
             }
         }
         private IPluginExecutionContext _context = null;
+
+        /// <summary>
+        /// A reference to the organization service
+        /// </summary>
+        protected IOrganizationService OrganizationService
+        {
+            get
+            {
+                if(_organizationService == null)
+                {
+                    if(ServiceProvider != null)
+                    {
+                        _organizationService = (IOrganizationService)ServiceProvider;
+                    }
+                }
+                return _organizationService;
+            }
+        }
+        private IOrganizationService _organizationService = null;
         #endregion
 
-        #region Helper Functions
+        #region Functions
         /// <summary>
         /// Sends the Execution Context to an Endpoint 
         /// </summary>
@@ -97,6 +117,70 @@ namespace BasePlugin
             return CloudService.Execute(new EntityReference("serviceendpoint", EndpointId), Context);
         }
 
+        /// <summary>
+        /// Logs a message to the trace log
+        /// </summary>
+        /// <param name="message">The message to log</param>
+        protected void Trace(string message)
+        {
+            if(TracingService != null)
+            {
+                TracingService.Trace(message);
+            }
+        }
+
+        /// <summary>
+        /// Executes a workflow on an record
+        /// </summary>
+        /// <param name="workflowId">The id of the workflow to execute</param>
+        /// <param name="entityId">The id of the entity over which to execute to workflow</param>
+        /// <returns>The response from the ExecuteWorkflow request</returns>
+        protected ExecuteWorkflowResponse ExecuteWorkflowOnEntity(Guid workflowId, Guid entityId)
+        {
+            ExecuteWorkflowRequest request = new ExecuteWorkflowRequest()
+            {
+                WorkflowId = workflowId,
+                EntityId = entityId
+            };
+            return(ExecuteWorkflowResponse)(OrganizationService.Execute(request));
+
+        }
+
+        /// <summary>
+        /// Sends an email
+        /// </summary>
+        /// <param name="regarding">What the email regards</param>
+        /// <param name="to">The recipient of the email</param>
+        /// <param name="subject">The subject of the email</param>
+        /// <param name="description">The body of the email (HTML supported)</param>
+        /// <returns>The response of the SendEmail Request</returns>
+        protected SendEmailResponse SendEmail(EntityReference regarding, EntityReference to, string subject, string description)
+        {
+            Entity email = new Entity("email");
+            Entity fromParty = new Entity("activityparty");
+            Entity toParty = new Entity("activityparty");
+
+            toParty["partyid"] = new EntityReference("systemuser", to.Id);
+            fromParty["partyid"] = new EntityReference("systemuser", Context.UserId);
+            email["from"] = new Entity[] { fromParty };
+            email["to"] = new Entity[] { toParty };
+
+            email["subject"] = subject;
+            email["description"] = description;
+            email["regardingobjectid"] = regarding;
+
+            Guid emailId = OrganizationService.Create(email);
+            SendEmailRequest sendEmailreq = new SendEmailRequest
+            {
+                EmailId = emailId,
+                TrackingToken = "",
+                IssueSend = true
+            };
+            return (SendEmailResponse)OrganizationService.Execute(sendEmailreq);
+        }
+        #endregion
+
+        #region Configurations
         /// <summary>
         /// Returns the content of the unsecure configuration for the step
         /// </summary>
@@ -205,7 +289,8 @@ namespace BasePlugin
             return string.Empty;
         }
         #endregion
-
+        
+        #region Entity Properties
         #region Images
         /// <summary> 
         /// The item being handled by the event 
@@ -320,9 +405,15 @@ namespace BasePlugin
         }
         private string _logicalName = null;
         #endregion
+        #endregion
 
         #region Constructor
-        public PluginBase(string unsecureConfiguration, string secureConfiguration)
+        public PluginBase():base()
+        {
+
+        }
+
+        public PluginBase(string unsecureConfiguration, string secureConfiguration):this()
         {
             _unsecureConfiguration = unsecureConfiguration;
             _secureConfiguration = secureConfiguration;

@@ -1,11 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Workflow;
-using System;
 using System.Activities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServiceBusWorkflowActivity
 {
@@ -18,7 +13,6 @@ namespace ServiceBusWorkflowActivity
         protected override void Execute(CodeActivityContext executionContext)
         {
             var context = executionContext.GetExtension<IWorkflowContext>();
-
             var endpointService = executionContext.GetExtension<IServiceEndpointNotificationService>();
             endpointService.Execute(ServiceEndpoint.Get(executionContext), context);
         }
