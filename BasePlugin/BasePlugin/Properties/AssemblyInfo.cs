@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("BasePlugin")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Helper to use when creating Microsoft Dynamics 365 plugins")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BasePlugin")]

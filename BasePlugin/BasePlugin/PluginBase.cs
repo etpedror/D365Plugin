@@ -405,6 +405,50 @@ namespace BasePlugin
         }
         private string _logicalName = null;
         #endregion
+
+        #region Execution Details
+        /// <summary>
+        /// The stage that the plugin is running on
+        /// </summary>
+        protected PluginStage Stage
+        {
+            get
+            {
+                return (PluginStage)Context.Stage;
+            }
+        }
+
+        /// <summary>
+        /// The mode that the plugin is running on
+        /// </summary>
+        protected PluginMode Mode
+        {
+            get
+            {
+                return (PluginMode)Context.Mode;
+            }
+        }
+        
+        /// <summary>
+        /// Gets a list of Shared Variables
+        /// </summary>
+        protected Dictionary<string,object> SharedVariables
+        {
+            get
+            {
+                if (_sharedVariables == null)
+                {
+                    _sharedVariables = new Dictionary<string, object>();
+                    foreach(var pair in Context.SharedVariables)
+                    {
+                        _sharedVariables.Add(pair.Key, pair.Value);
+                    }
+                }
+                return _sharedVariables;
+            }
+        }
+        private Dictionary<string, object> _sharedVariables = null;
+        #endregion
         #endregion
 
         #region Constructor
